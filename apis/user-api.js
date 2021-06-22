@@ -7,12 +7,15 @@ const bcryptjs=require("bcryptjs")
 //core one no need to import
 const path=require("path")
 
+
+const checkToken=require("./middlewares/verifyToken")
+
 //connect angular app with express server
 userApi.use(exp.static(path.join(__dirname, './dist/sync/')))
 
 userApi.use(exp.json())
 
-const databaseUrl="mongodb+srv://new1:cupnamdey123@srini.dvcom.mongodb.net/db1?retryWrites=true&w=majority"
+const databaseUrl="mongodb+srv://new1:test123@srini.dvcom.mongodb.net/db1?retryWrites=true&w=majority"
 
 let databaseObj;
 let userCollectionsObj;
@@ -116,11 +119,16 @@ userApi.post('/login',expressErrorHandler(async(req,res)=>{
         }
         else{
             //create token
-            let tokened=jwt.sign({username:credentials.username},'abcdef',{expiresIn:100})
+            let tokened=jwt.sign({username:credentials.username},'abcdef',{expiresIn:5})
             res.send({message:"Login successful",token:tokened ,username: credentials.username, userObj: user})
         }
     }
 }))
+
+//dummy route to create protected resource
+userApi.get("/testing",checkToken,(req,res)=>{
+    res.send({message:"This is protected data"})
+})
 
 
 //export module
