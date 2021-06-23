@@ -1,11 +1,35 @@
 const exp=require("express")
 const userApi=exp.Router();
-const mc=require("mongodb").MongoClient;
 const jwt = require("jsonwebtoken")
 const expressErrorHandler=require("express-async-handler")
 const bcryptjs=require("bcryptjs")
 //core one no need to import
 const path=require("path")
+//import all cloudinary modules
+const cloudinary= require("cloudinary").v2;
+const multer=require("multer")
+const {CloudinaryStorage}=require("multer-storage-cloudinary")
+
+//configure cloudinary
+cloudinary.config({
+    cloud_name:'srinijammula',
+    api_key:'547687251359836',
+    api_secret:'EVDC4bIuKg2FOb8uLB1ZraSVmOY'
+})
+
+//configure multer-storage-cloudinary
+const clStorage=new CloudinaryStorage({
+    cloudinary:cloudinary,
+    params:async (req,file)=>{
+        return{
+            folder:"srini",
+            public_id:file.fieldname+'-'+Date.now()
+        }
+    }
+})
+
+//configure multer
+const multerObj= multer({storage:clStorage})
 
 
 const checkToken=require("./middlewares/verifyToken")
@@ -15,20 +39,10 @@ userApi.use(exp.static(path.join(__dirname, './dist/sync/')))
 
 userApi.use(exp.json())
 
-const databaseUrl="mongodb+srv://new1:test123@srini.dvcom.mongodb.net/db1?retryWrites=true&w=majority"
-
-let databaseObj;
 let userCollectionsObj;
-
-mc.connect(databaseUrl,{useNewUrlParser:true,useUnifiedTopology:true},(err,client)=>{
-    if(err){
-        console.log("error in database connection",err)
-    }
-    else{
-        databaseObj=client.db("db1");
-        userCollectionsObj=databaseObj.collection("db1collection")
-        console.log("Database connection is success")
-    }
+userApi.use((req,res,next)=>{
+    userCollectionsObj=req.app.get("userCollectionsObj")
+    next();
 })
 
 
@@ -56,8 +70,8 @@ userApi.get('/getusers/:username',expressErrorHandler(async(req,res,next)=>{
 
 
 //create user
-userApi.post("/createuser",expressErrorHandler(async(req,res,next)=>{
-    let newUser=req.body;
+userApi.post("/createuser",multerObj.single('photo'),expressErrorHandler(async(req,res,next)=>{
+    let newUser=JSON.parse(req.body.userObj);
     //search for existing users
     let user=await userCollectionsObj.findOne({username:newUser.username})
     if(user!=null){
@@ -67,6 +81,8 @@ userApi.post("/createuser",expressErrorHandler(async(req,res,next)=>{
         //hashing
         let hashed=await bcryptjs.hash(newUser.password,7)
         newUser.password = hashed;
+        newUser.profileImage=req.file.path;
+        delete newUser.photo;
         await userCollectionsObj.insertOne(newUser)
         res.send({message:"User created"})
     }

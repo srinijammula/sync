@@ -4,7 +4,21 @@ const path = require("path")
 
 //importing
 const userApi=require("./apis/user-api")
+const mc=require("mongodb").MongoClient;
 
+const databaseUrl="mongodb+srv://new1:test123@srini.dvcom.mongodb.net/db1?retryWrites=true&w=majority"
+
+mc.connect(databaseUrl,{useNewUrlParser:true,useUnifiedTopology:true},(err,client)=>{
+    if(err){
+        console.log("error in database connection",err)
+    }
+    else{
+        let databaseObj=client.db("db1");
+        let userCollectionsObj=databaseObj.collection("db1collection")
+        app.set("userCollectionsObj",userCollectionsObj)
+        console.log("Database connection is success")
+    }
+})
 
 app.use("/user",userApi)
 
