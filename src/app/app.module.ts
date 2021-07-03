@@ -10,6 +10,8 @@ import { UserprofileComponent } from './userprofile/userprofile.component';
 import {FormsModule} from'@angular/forms'
 import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http'
 import { AuthorizationService } from './authorization.service';
+import { SharedModule } from './shared/shared.module';
+import { UsercartComponent } from './usercart/usercart.component';
 
 @NgModule({
   declarations: [
@@ -17,13 +19,15 @@ import { AuthorizationService } from './authorization.service';
     HomeComponent,
     LoginComponent,
     RegisterComponent,
-    UserprofileComponent
+    UserprofileComponent,
+    UsercartComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    SharedModule
   ],
   providers: [
     {

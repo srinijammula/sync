@@ -5,3 +5,18 @@
     <h2>Date of birth : {{userObj.dob |date:'dd-M-yyyy'}}</h2>
     <button class="btn btn-primary" (click)="getPrivateData()">Get private data</button>
 </div>
+
+<ul class="nav nav-tabs nav-justified">
+    <li class="nav-item">
+        <a class="nav-link" routerLinkActive="active" routerLink="viewproducts">View products</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" routerLinkActive="active" routerLink="usercart">Cart</a>
+    </li>
+
+</ul>
+
+
+<div class="container">
+    <router-outlet></router-outlet>
+</div>

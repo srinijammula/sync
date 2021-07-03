@@ -17,7 +17,12 @@ export class UserService {
   }
 
   loginUser(credentials):Observable<any>{
-    return  this.hc.post("/user/login",credentials)
+    if(credentials.type==="admin"){
+      return  this.hc.post("/admin/login",credentials)
+    }
+    if(credentials.type==="user"){
+      return  this.hc.post("/user/login",credentials)
+    }
   }
 
 

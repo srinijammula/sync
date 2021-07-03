@@ -23,8 +23,15 @@ export class LoginComponent implements OnInit {
           localStorage.setItem("username",res.username)
           localStorage.setItem("userObj",JSON.stringify(res.userObj))
           this.us.userLoginStatus=true;
-          //navigate to user profile
-          this.router.navigateByUrl(`userprofile/${res.username}`)
+          
+          if(userCredentials.type==="user"){
+            //navigate to user profile
+            this.router.navigateByUrl(`userprofile/${res.username}`)
+            }
+            if(userCredentials.type==="admin"){
+              //navigate to admin profile
+              this.router.navigateByUrl(`admin/${res.username}`)
+              }
         }
         else{
           alert(res.message)
